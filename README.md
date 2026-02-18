@@ -119,3 +119,4 @@ python -m mkdocs serve
 
 - License: [MIT](./package.json)
 - Changelog: [`CHANGELOG.md`](./CHANGELOG.md)
+- Security policy: [`SECURITY.md`](./SECURITY.md)
