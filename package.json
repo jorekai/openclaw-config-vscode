@@ -2,7 +2,7 @@
   "name": "openclaw-config-vscode",
   "displayName": "OpenClaw Config",
   "description": "Lightweight VS Code support for openclaw.json with live schema updates and Zod shadow diagnostics.",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "publisher": "jorekai",
   "license": "MIT",
   "icon": "assets/icon.png",
@@ -43,8 +43,8 @@
     "url": "https://github.com/jorekai/openclaw-config-vscode/issues"
   },
   "files": [
-    "dist/**/*.js",
-    "dist/**/*.js.map",
+    "dist/extension.js",
+    "dist/extension.js.map",
     "schemas/live/**",
     "snippets/**",
     "assets/icon.png",
@@ -167,8 +167,8 @@
   },
   "scripts": {
     "vscode:prepublish": "pnpm compile",
-    "compile": "tsc -p ./tsconfig.json",
-    "watch": "tsc -watch -p ./tsconfig.json",
+    "compile": "tsc -p ./tsconfig.json --noEmit && esbuild src/extension.ts --bundle --platform=node --format=cjs --main-fields=module,main --external:vscode --outfile=dist/extension.js --sourcemap",
+    "watch": "esbuild src/extension.ts --bundle --platform=node --format=cjs --main-fields=module,main --external:vscode --outfile=dist/extension.js --sourcemap --watch",
     "lint": "tsc -p ./tsconfig.json --noEmit",
     "sync:schema": "tsx ./scripts/sync-openclaw-schema.mts",
     "test": "vitest run",

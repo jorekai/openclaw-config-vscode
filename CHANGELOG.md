@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.2 - 2026-02-18
+
+### Fixed
+- Fixed marketplace activation crash by bundling runtime JSONC parsing into `dist/extension.js` so schema provider registration works without external runtime dependencies.
+- Tightened packaged files to publish only the bundled runtime entry (`dist/extension.js` + source map) to avoid stale transpiled artifacts.
+
 ## 0.1.0 - 2026-02-18
 
 ### Added
