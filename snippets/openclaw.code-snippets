@@ -1,0 +1,60 @@
+{
+  "OpenClaw Starter Config": {
+    "scope": "jsonc",
+    "prefix": "openclaw-starter",
+    "description": "Create a minimal openclaw.json starter config",
+    "body": [
+      "{",
+      "  \"\\$schema\": \"openclaw-schema://live/openclaw.schema.json\",",
+      "  \"agents\": {",
+      "    \"defaults\": {",
+      "      \"workspace\": \"~/.openclaw/workspace\"",
+      "    }",
+      "  },",
+      "  \"channels\": {}",
+      "}"
+    ]
+  },
+  "OpenClaw Agents Defaults": {
+    "scope": "jsonc",
+    "prefix": "openclaw-agents-defaults",
+    "description": "Insert agents.defaults block",
+    "body": [
+      "\"agents\": {",
+      "  \"defaults\": {",
+      "    \"workspace\": \"~/.openclaw/workspace\",",
+      "    \"model\": {",
+      "      \"primary\": \"openai/gpt-5.2\"",
+      "    }",
+      "  }",
+      "}"
+    ]
+  },
+  "OpenClaw Telegram Channel": {
+    "scope": "jsonc",
+    "prefix": "openclaw-telegram",
+    "description": "Insert channels.telegram block",
+    "body": [
+      "\"channels\": {",
+      "  \"telegram\": {",
+      "    \"enabled\": true,",
+      "    \"botToken\": \"${1:123\\:abc}\",",
+      "    \"dmPolicy\": \"pairing\"",
+      "  }",
+      "}"
+    ]
+  },
+  "OpenClaw Gateway Auth": {
+    "scope": "jsonc",
+    "prefix": "openclaw-gateway-auth",
+    "description": "Insert gateway.auth token mode",
+    "body": [
+      "\"gateway\": {",
+      "  \"auth\": {",
+      "    \"mode\": \"token\",",
+      "    \"token\": \"${1:replace-me}\"",
+      "  }",
+      "}"
+    ]
+  }
+}

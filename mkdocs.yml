@@ -1,0 +1,30 @@
+site_name: OpenClaw Config VS Code Extension
+site_description: DX-first documentation for the OpenClaw VS Code extension
+site_url: https://nilsjorek.github.io/openclaw-config-vscode/
+repo_url: https://github.com/nilsjorek/openclaw-config-vscode
+repo_name: nilsjorek/openclaw-config-vscode
+docs_dir: docs
+site_dir: site
+exclude_docs: |
+  README.md
+
+theme:
+  name: mkdocs
+
+markdown_extensions:
+  - tables
+  - admonition
+  - toc:
+      permalink: true
+
+nav:
+  - Home: index.md
+  - Getting Started: getting-started.md
+  - Commands: commands.md
+  - Configuration: configuration.md
+  - Diagnostics and Quick Fixes: diagnostics-and-quick-fixes.md
+  - Workflows: workflows.md
+  - Troubleshooting: troubleshooting.md
+  - Architecture: architecture.md
+  - Contributing: contributing.md
+  - Operations Runbook: runbook.md

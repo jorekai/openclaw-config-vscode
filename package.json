@@ -1,0 +1,167 @@
+{
+  "name": "openclaw-config-vscode",
+  "displayName": "OpenClaw Config",
+  "description": "Lightweight VS Code support for openclaw.json with live schema updates and Zod shadow diagnostics.",
+  "version": "0.0.1",
+  "publisher": "nilsjorek",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.95.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Other"
+  ],
+  "activationEvents": [
+    "workspaceContains:**/openclaw.json",
+    "onLanguage:json",
+    "onLanguage:jsonc",
+    "onCommand:openclawConfig.newConfig",
+    "onCommand:openclawConfig.refreshSchemaNow",
+    "onCommand:openclawConfig.insertSectionSnippet",
+    "onCommand:openclawConfig.explainSelection",
+    "onCommand:openclawConfig.normalizeConfig",
+    "onCommand:openclawConfig.showSchemaStatus",
+    "onCommand:openclawConfig.applyQuickFix"
+  ],
+  "main": "./dist/extension.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nilsjorek/openclaw-config-vscode.git"
+  },
+  "contributes": {
+    "commands": [
+      {
+        "command": "openclawConfig.newConfig",
+        "title": "OpenClaw: New Config"
+      },
+      {
+        "command": "openclawConfig.refreshSchemaNow",
+        "title": "OpenClaw: Refresh Schema Now"
+      },
+      {
+        "command": "openclawConfig.insertSectionSnippet",
+        "title": "OpenClaw: Insert Section Snippet"
+      },
+      {
+        "command": "openclawConfig.explainSelection",
+        "title": "OpenClaw: Explain Selection"
+      },
+      {
+        "command": "openclawConfig.normalizeConfig",
+        "title": "OpenClaw: Normalize Config"
+      },
+      {
+        "command": "openclawConfig.showSchemaStatus",
+        "title": "OpenClaw: Show Schema Status"
+      },
+      {
+        "command": "openclawConfig.applyQuickFix",
+        "title": "OpenClaw: Apply Quick Fix (Internal)"
+      }
+    ],
+    "configuration": {
+      "title": "OpenClaw Config",
+      "properties": {
+        "openclawConfig.zodShadow.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable Zod shadow diagnostics for openclaw.json files."
+        },
+        "openclawConfig.sync.ttlHours": {
+          "type": "number",
+          "default": 6,
+          "minimum": 1,
+          "maximum": 168,
+          "description": "Hours to cache live schema artifacts before checking for an update."
+        },
+        "openclawConfig.sync.manifestUrl": {
+          "type": "string",
+          "default": "https://raw.githubusercontent.com/nilsjorek/openclaw-config-vscode/main/schemas/live/manifest.json",
+          "description": "Manifest URL used for live schema synchronization."
+        },
+        "openclawConfig.sync.allowedHosts": {
+          "type": "array",
+          "default": [
+            "raw.githubusercontent.com"
+          ],
+          "items": {
+            "type": "string"
+          },
+          "description": "Strict allowlist of hosts for manifest and artifact downloads."
+        },
+        "openclawConfig.sync.allowedRepositories": {
+          "type": "array",
+          "default": [
+            "nilsjorek/openclaw-config-vscode"
+          ],
+          "items": {
+            "type": "string"
+          },
+          "description": "Strict allowlist of repositories in remote schema URLs. Use \"*\" to disable repository filtering."
+        },
+        "openclawConfig.codeActions.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable OpenClaw-specific quick fixes for openclaw.json diagnostics."
+        },
+        "openclawConfig.integrator.strictSecrets": {
+          "type": "boolean",
+          "default": false,
+          "description": "Treat cleartext secret values as errors instead of warnings."
+        },
+        "openclawConfig.integrator.explainOnHover": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show context-aware OpenClaw field explanations on hover."
+        },
+        "openclawConfig.plugins.metadataUrl": {
+          "type": "string",
+          "default": "",
+          "description": "Optional remote plugin metadata URL (versioned JSON hints) for dynamic subfields."
+        },
+        "openclawConfig.plugins.metadataLocalPath": {
+          "type": "string",
+          "default": ".openclaw/plugin-hints.json",
+          "description": "Workspace-relative path to local plugin metadata hints."
+        }
+      }
+    },
+    "jsonValidation": [
+      {
+        "fileMatch": "**/openclaw.json",
+        "url": "openclaw-schema://live/openclaw.schema.json"
+      }
+    ],
+    "snippets": [
+      {
+        "language": "jsonc",
+        "path": "./snippets/openclaw.code-snippets"
+      }
+    ]
+  },
+  "scripts": {
+    "compile": "tsc -p ./tsconfig.json",
+    "watch": "tsc -watch -p ./tsconfig.json",
+    "lint": "tsc -p ./tsconfig.json --noEmit",
+    "sync:schema": "tsx ./scripts/sync-openclaw-schema.mts",
+    "test": "vitest run",
+    "test:unit": "vitest run ./test/unit",
+    "test:integration": "tsx ./test/integration/runTest.ts",
+    "pretest": "npm run compile"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.8",
+    "@types/node": "^24.2.0",
+    "@types/vscode": "^1.95.0",
+    "@vscode/test-electron": "^2.5.2",
+    "esbuild": "^0.25.9",
+    "mocha": "^10.8.2",
+    "tsx": "^4.20.5",
+    "typescript": "^5.9.2",
+    "vitest": "^3.2.4"
+  },
+  "dependencies": {
+    "jsonc-parser": "^3.3.1"
+  }
+}
