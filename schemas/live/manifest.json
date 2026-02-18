@@ -1,7 +1,7 @@
 {
   "version": 1,
-  "openclawCommit": "6a19654c4a88d9b726b8c260a0f9881fdec35e25",
-  "generatedAt": "2026-02-18T15:22:28.936Z",
+  "openclawCommit": "84841aebe526f6e6c6608a5beda65d5e4d925e46",
+  "generatedAt": "2026-02-18T18:21:08.724Z",
   "artifacts": {
     "schema": {
       "url": "https://raw.githubusercontent.com/jorekai/openclaw-config-vscode/main/schemas/live/openclaw.schema.json",
@@ -13,7 +13,7 @@
     },
     "validator": {
       "url": "https://raw.githubusercontent.com/jorekai/openclaw-config-vscode/main/schemas/live/openclaw.validator.mjs",
-      "sha256": "4e227fd0759fb23cae8f97246b90d1d1c5a496f2b321c136452020ecf17c098c"
+      "sha256": "42d52f37c297dfa49914c9251aff69d2cdb86977ec25556f1ea81f2fb07d5d4e"
     }
   }
 }
