@@ -23,16 +23,32 @@ jobs:
       - name: Install ClamAV
         run: |
           sudo apt-get update
-          sudo apt-get install -y clamav
+          sudo apt-get install -y clamav clamav-freshclam
 
       - name: Update virus definitions
-        run: sudo freshclam || true
+        run: |
+          sudo systemctl stop clamav-freshclam || true
+          for attempt in 1 2 3; do
+            if sudo freshclam --stdout; then
+              exit 0
+            fi
+            echo "freshclam attempt ${attempt} failed; retrying..."
+            sleep $((attempt * 20))
+          done
+          echo "freshclam failed after retries." >&2
+          exit 1
+
+      - name: Verify ClamAV database
+        run: |
+          ls -la /var/lib/clamav
+          test -f /var/lib/clamav/main.cvd -o -f /var/lib/clamav/main.cld
 
       - name: Run ClamAV scan
         run: |
           clamscan \
             --recursive \
             --infected \
+            --database=/var/lib/clamav \
             --exclude-dir='^./.git$' \
             --exclude-dir='^./node_modules$' \
             .

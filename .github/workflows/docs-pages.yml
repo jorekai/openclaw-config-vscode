@@ -22,6 +22,8 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    outputs:
+      pages_enabled: ${{ steps.pages.outputs.enabled }}
 
     steps:
       - name: Checkout
@@ -40,10 +42,25 @@ jobs:
       - name: Build docs
         run: python -m mkdocs build --strict
 
+      - name: Check GitHub Pages status
+        id: pages
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh api "repos/${{ github.repository }}/pages" >/dev/null 2>&1; then
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+            echo "GitHub Pages is enabled."
+          else
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+            echo "GitHub Pages is not enabled; skipping deploy steps."
+          fi
+
       - name: Setup Pages
+        if: steps.pages.outputs.enabled == 'true'
         uses: actions/configure-pages@v5
 
       - name: Upload Pages artifact
+        if: steps.pages.outputs.enabled == 'true'
         uses: actions/upload-pages-artifact@v3
         with:
           path: site
@@ -51,6 +68,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     needs: build
+    if: needs.build.outputs.pages_enabled == 'true'
 
     environment:
       name: github-pages
