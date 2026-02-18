@@ -91,7 +91,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 
       if (initialSync.updated) {
         schemaProvider.refresh();
-        await vscode.commands.executeCommand("json.schema.refresh");
+        await refreshJsonSchema(output);
       }
     })();
 
@@ -117,7 +117,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
           strictSecrets: settings.strictSecrets,
         }),
       ]);
-      await vscode.commands.executeCommand("json.schema.refresh");
+      await refreshJsonSchema(output);
     }
   });
 
@@ -190,4 +190,24 @@ function toErrorMessage(error: unknown): string {
     return error.message;
   }
   return String(error);
+}
+
+async function refreshJsonSchema(output: vscode.OutputChannel): Promise<void> {
+  try {
+    await vscode.commands.executeCommand("json.schema.refresh");
+  } catch (error) {
+    const message = toErrorMessage(error);
+    if (isMissingCommandError(message, "json.schema.refresh")) {
+      output.appendLine("[schema] json.schema.refresh is unavailable in this host. Skipping refresh.");
+      return;
+    }
+    throw error;
+  }
+}
+
+function isMissingCommandError(message: string, commandId: string): boolean {
+  return (
+    message.toLowerCase().includes(commandId.toLowerCase()) &&
+    message.toLowerCase().includes("not found")
+  );
 }
