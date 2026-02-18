@@ -2,6 +2,7 @@ import * as vscode from "vscode";
 import { createCatalogController } from "./extension/catalog";
 import { registerOpenClawCommands } from "./extension/commands";
 import { registerOpenClawEvents } from "./extension/events";
+import { createSerializedRunner } from "./extension/serializedRunner";
 import { readSettings } from "./extension/settings";
 import { SchemaArtifactManager } from "./schema/artifactManager";
 import { OPENCLAW_SCHEMA_URI } from "./schema/constants";
@@ -11,6 +12,8 @@ import { isOpenClawConfigDocument } from "./utils";
 import { registerOpenClawCodeActions } from "./validation/codeActions";
 import { OpenClawIntegratorDiagnostics } from "./validation/integratorDiagnostics";
 import { OpenClawZodShadowDiagnostics } from "./validation/zodShadow";
+
+const BACKGROUND_SYNC_INTERVAL_MS = 15 * 60 * 1_000;
 
 export async function activate(context: vscode.ExtensionContext): Promise<void> {
   const output = vscode.window.createOutputChannel("OpenClaw Config");
@@ -99,7 +102,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     }
   };
 
-  const syncAndRefresh = async (force: boolean): Promise<void> => {
+  const syncAndRefresh = createSerializedRunner(async (force: boolean) => {
     await ensureInitialized(force ? "manual-refresh" : "sync");
     const settings = readSettings();
     const result = await artifacts.syncIfNeeded(settings.ttlHours, force);
@@ -116,7 +119,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
       ]);
       await vscode.commands.executeCommand("json.schema.refresh");
     }
-  };
+  });
 
   const catalog = createCatalogController({
     artifacts,
@@ -156,6 +159,18 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     getPluginEntries: catalog.getPluginEntries,
   });
 
+  const backgroundSync = setInterval(() => {
+    if (!initialized) {
+      return;
+    }
+    void syncAndRefresh(false).catch((error) => {
+      output.appendLine(`[sync] Background sync failed: ${toErrorMessage(error)}`);
+    });
+  }, BACKGROUND_SYNC_INTERVAL_MS);
+  context.subscriptions.push({
+    dispose: () => clearInterval(backgroundSync),
+  });
+
   const hasOpenDocuments = vscode.workspace.textDocuments.some((document) =>
     isOpenClawConfigDocument(document),
   );
@@ -168,4 +183,11 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 
 export function deactivate(): void {
   // no-op
+}
+
+function toErrorMessage(error: unknown): string {
+  if (error instanceof Error) {
+    return error.message;
+  }
+  return String(error);
 }

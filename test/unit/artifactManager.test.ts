@@ -100,6 +100,84 @@ describe("artifactManager", () => {
     assert.equal(await manager.getUiHintsText(), remoteHints);
   });
 
+  it("loads validator only from bundled artifacts even when cache is active", async () => {
+    const bundledValidator =
+      "export function validate(raw){return raw && raw.fromCache ? [{path:'bundled',message:'bundled'}] : []}";
+    const fixture = await createFixture({ bundledValidator });
+
+    const remoteSchema = JSON.stringify({ type: "object", properties: { gateway: { type: "object" } } });
+    const remoteHints = JSON.stringify({ gateway: { label: "Gateway" } });
+    const remoteValidator =
+      "export function validate(raw){return raw && raw.fromCache ? [{path:'cache',message:'cache'}] : []}";
+
+    const manifest = {
+      version: 1,
+      openclawCommit: "validator-check",
+      generatedAt: new Date().toISOString(),
+      artifacts: {
+        schema: {
+          url: "https://example.com/openclaw.schema.json",
+          sha256: sha256Hex(remoteSchema),
+        },
+        uiHints: {
+          url: "https://example.com/openclaw.ui-hints.json",
+          sha256: sha256Hex(remoteHints),
+        },
+        validator: {
+          url: "https://example.com/openclaw.validator.mjs",
+          sha256: sha256Hex(remoteValidator),
+        },
+      },
+    };
+
+    const manager = new SchemaArtifactManager({
+      context: fixture.context,
+      manifestUrl: "https://example.com/manifest.json",
+      importModuleFn: async (moduleUrl: string) => {
+        if (moduleUrl.includes("/schemas/live/")) {
+          return {
+            validate: (raw: unknown) =>
+              raw && typeof raw === "object" && "fromCache" in raw
+                ? [{ path: "bundled", message: "bundled" }]
+                : [],
+          };
+        }
+        return {
+          validate: () => [{ path: "cache", message: "cache" }],
+        };
+      },
+      fetchFn: async (url: string | URL | Request) => {
+        const key = String(url);
+        if (key.endsWith("manifest.json")) {
+          return new Response(JSON.stringify(manifest), { status: 200 });
+        }
+        if (key.endsWith("openclaw.schema.json")) {
+          return new Response(remoteSchema, { status: 200 });
+        }
+        if (key.endsWith("openclaw.ui-hints.json")) {
+          return new Response(remoteHints, { status: 200 });
+        }
+        if (key.endsWith("openclaw.validator.mjs")) {
+          return new Response(remoteValidator, { status: 200 });
+        }
+        return new Response("not found", { status: 404 });
+      },
+      securityPolicy: {
+        allowedHosts: ["example.com"],
+        allowedRepositories: ["*"],
+      },
+    });
+
+    const result = await manager.initialize(6);
+    assert.equal(result.updated, true);
+    assert.equal(await manager.getActiveSource(), "cache");
+
+    const validator = await manager.getValidator();
+    assert.ok(validator);
+    const issues = validator.validate({ fromCache: true });
+    assert.equal(issues[0]?.path, "bundled");
+  });
+
   it("rejects invalid artifact hashes and keeps bundled fallback", async () => {
     const fixture = await createFixture();
 
@@ -257,7 +335,9 @@ describe("artifactManager", () => {
   });
 });
 
-async function createFixture(): Promise<{
+async function createFixture(options?: {
+  bundledValidator?: string;
+}): Promise<{
   root: string;
   context: {
     extensionPath: string;
@@ -274,7 +354,7 @@ async function createFixture(): Promise<{
 
   const schema = JSON.stringify({ title: "OpenClawConfig" }, null, 2);
   const hints = JSON.stringify({}, null, 2);
-  const validator = "export function validate(){return []}";
+  const validator = options?.bundledValidator ?? "export function validate(){return []}";
 
   await fs.writeFile(path.join(bundledDir, "openclaw.schema.json"), schema, "utf8");
   await fs.writeFile(path.join(bundledDir, "openclaw.ui-hints.json"), hints, "utf8");

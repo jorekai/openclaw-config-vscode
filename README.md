@@ -56,7 +56,6 @@ Then launch the extension in VS Code from this repo:
 | OpenClaw: Explain Selection | `openclawConfig.explainSelection` | Open markdown explain view for current path |
 | OpenClaw: Normalize Config | `openclawConfig.normalizeConfig` | Normalize and save config with stable structure |
 | OpenClaw: Show Schema Status | `openclawConfig.showSchemaStatus` | Inspect source, commit, sync state, policy result |
-| OpenClaw: Apply Quick Fix (Internal) | `openclawConfig.applyQuickFix` | Internal command used by code actions |
 
 ## Settings Overview
 

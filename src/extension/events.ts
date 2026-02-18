@@ -5,6 +5,7 @@ import type { DynamicSubfieldCatalog } from "../schema/types";
 import { isOpenClawConfigDocument } from "../utils";
 import type { OpenClawIntegratorDiagnostics } from "../validation/integratorDiagnostics";
 import type { OpenClawZodShadowDiagnostics } from "../validation/zodShadow";
+import { cancelPendingValidation, clearAllPendingValidations } from "./pendingValidation";
 import type { ExtensionSettings } from "./settings";
 
 const OPENCLAW_DOCUMENT_SELECTOR: vscode.DocumentSelector = [
@@ -34,10 +35,7 @@ export function registerOpenClawEvents(options: EventRegistrationOptions): void 
       return;
     }
     const key = document.uri.toString();
-    const existing = pendingValidations.get(key);
-    if (existing) {
-      clearTimeout(existing);
-    }
+    cancelPendingValidation(pendingValidations, key);
     const timeout = setTimeout(() => {
       pendingValidations.delete(key);
       void options.ensureInitialized("validation").then(() => options.validateDocument(document));
@@ -86,6 +84,7 @@ export function registerOpenClawEvents(options: EventRegistrationOptions): void 
       scheduleValidation(document);
     }),
     vscode.workspace.onDidCloseTextDocument((document) => {
+      cancelPendingValidation(pendingValidations, document.uri.toString());
       options.zodShadow.clear(document);
       options.integratorDiagnostics.clear(document);
     }),
@@ -134,10 +133,7 @@ export function registerOpenClawEvents(options: EventRegistrationOptions): void 
 
   options.context.subscriptions.push({
     dispose: () => {
-      for (const timeout of pendingValidations.values()) {
-        clearTimeout(timeout);
-      }
-      pendingValidations.clear();
+      clearAllPendingValidations(pendingValidations);
     },
   });
 }

@@ -6,25 +6,28 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   sync:
     runs-on: ubuntu-latest
+    outputs:
+      changed: ${{ steps.diff.outputs.changed }}
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
         with:
           fetch-depth: 0
+          persist-credentials: false
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@c5ba7f7862a0f64c1b1a05fbac13e0b8e86ba08c
         with:
           version: 9
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version: 22
           cache: pnpm
@@ -41,17 +44,51 @@ jobs:
       - name: Detect changes
         id: diff
         run: |
-          if git diff --quiet; then
+          if git diff --quiet -- schemas/live; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
           else
             echo "changed=true" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Commit and push
+      - name: Upload synced artifacts
         if: steps.diff.outputs.changed == 'true'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: synced-schema-live
+          path: |
+            schemas/live/openclaw.schema.json
+            schemas/live/openclaw.ui-hints.json
+            schemas/live/openclaw.validator.mjs
+            schemas/live/manifest.json
+          if-no-files-found: error
+
+  commit:
+    runs-on: ubuntu-latest
+    needs: sync
+    if: needs.sync.outputs.changed == 'true'
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          fetch-depth: 0
+
+      - name: Download synced artifacts
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: synced-schema-live
+          path: .
+
+      - name: Commit and push
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add schemas/live
+          if git diff --cached --quiet -- schemas/live; then
+            echo "No schema changes to commit."
+            exit 0
+          fi
           git commit -m "chore(schema): sync OpenClaw config artifacts"
           git push

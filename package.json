@@ -30,8 +30,7 @@
     "onCommand:openclawConfig.insertSectionSnippet",
     "onCommand:openclawConfig.explainSelection",
     "onCommand:openclawConfig.normalizeConfig",
-    "onCommand:openclawConfig.showSchemaStatus",
-    "onCommand:openclawConfig.applyQuickFix"
+    "onCommand:openclawConfig.showSchemaStatus"
   ],
   "main": "./dist/extension.js",
   "repository": {
@@ -79,10 +78,6 @@
       {
         "command": "openclawConfig.showSchemaStatus",
         "title": "OpenClaw: Show Schema Status"
-      },
-      {
-        "command": "openclawConfig.applyQuickFix",
-        "title": "OpenClaw: Apply Quick Fix (Internal)"
       }
     ],
     "configuration": {

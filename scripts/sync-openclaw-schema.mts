@@ -17,7 +17,8 @@ type SchemaManifestV1 = {
   };
 };
 
-const OPENCLAW_REPO = process.env.OPENCLAW_REPO ?? "https://github.com/openclaw/openclaw.git";
+const TRUSTED_OPENCLAW_REPO = "https://github.com/openclaw/openclaw.git";
+const OPENCLAW_REPO = normalizeOpenClawRepo(process.env.OPENCLAW_REPO ?? TRUSTED_OPENCLAW_REPO);
 const OPENCLAW_REF = process.env.OPENCLAW_REF ?? "main";
 const ARTIFACT_REPOSITORY =
   process.env.SCHEMA_REPOSITORY ?? process.env.GITHUB_REPOSITORY ?? "jorekai/openclaw-config-vscode";
@@ -50,7 +51,7 @@ async function main(): Promise<void> {
     await run("git", ["clone", "--depth", "1", "--branch", OPENCLAW_REF, OPENCLAW_REPO, openclawDir]);
     const commit = (await run("git", ["rev-parse", "HEAD"], { cwd: openclawDir })).stdout.trim();
 
-    await run("pnpm", ["install", "--frozen-lockfile"], { cwd: openclawDir });
+    await run("pnpm", ["install", "--frozen-lockfile", "--ignore-scripts"], { cwd: openclawDir });
 
     const exportScriptPath = path.join(tempRoot, "export-config-schema.ts");
     const validatorEntryPath = path.join(tempRoot, "openclaw-validator-entry.ts");
@@ -160,6 +161,22 @@ export function validate(raw) {
 
 function hash(value: string): string {
   return createHash("sha256").update(value).digest("hex");
+}
+
+function normalizeOpenClawRepo(rawRepo: string): string {
+  const trimmed = rawRepo.trim();
+  const parsed = new URL(trimmed || TRUSTED_OPENCLAW_REPO);
+  const normalizedPath = parsed.pathname.replace(/\/+$/, "");
+  const trustedPath =
+    normalizedPath === "/openclaw/openclaw" || normalizedPath === "/openclaw/openclaw.git";
+
+  if (parsed.protocol !== "https:" || parsed.hostname !== "github.com" || !trustedPath) {
+    throw new Error(
+      `OPENCLAW_REPO must point to ${TRUSTED_OPENCLAW_REPO} (received ${trimmed || "<empty>"}).`,
+    );
+  }
+
+  return `${parsed.protocol}//${parsed.hostname}${normalizedPath}`;
 }
 
 async function resolveRemoteHeadCommit(): Promise<string> {

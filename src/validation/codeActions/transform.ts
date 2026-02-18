@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 import { applyEdits, modify, parse } from "jsonc-parser";
 import { OPENCLAW_SCHEMA_URI } from "../../schema/constants";
+import { isOpenClawConfigDocument } from "../../utils";
 import { parseIssuePath } from "../issuePath";
 import { fullDocumentRange, toEnvVarName } from "./path";
 import { FORMAT_OPTIONS, type OpenClawQuickFixPayload } from "./types";
@@ -13,6 +14,12 @@ export async function applyQuickFix(payload: unknown): Promise<void> {
 
   const uri = vscode.Uri.parse(payload.uri);
   const document = await vscode.workspace.openTextDocument(uri);
+  if (!isOpenClawConfigDocument(document)) {
+    await vscode.window.showWarningMessage(
+      "OpenClaw quick fix can only be applied to openclaw.json files.",
+    );
+    return;
+  }
 
   const nextText = computeQuickFixText(document.getText(), payload);
   if (nextText === null || nextText === document.getText()) {

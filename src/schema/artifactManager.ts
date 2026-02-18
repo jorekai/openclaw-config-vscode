@@ -30,6 +30,7 @@ type ArtifactManagerOptions = {
   context: Pick<vscode.ExtensionContext, "extensionPath" | "globalStorageUri">;
   manifestUrl?: string;
   fetchFn?: typeof fetch;
+  importModuleFn?: (moduleUrl: string) => Promise<unknown>;
   now?: () => number;
   securityPolicy?: Partial<ManifestSecurityPolicy>;
 };
@@ -133,6 +134,7 @@ export class SchemaArtifactManager {
   private manifestUrl: string;
   private securityPolicy: ManifestSecurityPolicy;
   private readonly fetchFn: typeof fetch;
+  private readonly importModuleFn: (moduleUrl: string) => Promise<unknown>;
   private readonly now: () => number;
   private readonly bundledRoot: string;
   private readonly cacheRoot: string;
@@ -155,6 +157,7 @@ export class SchemaArtifactManager {
         options.securityPolicy?.allowedRepositories ?? [...DEFAULT_ALLOWED_REPOSITORIES],
     });
     this.fetchFn = options.fetchFn ?? fetch;
+    this.importModuleFn = options.importModuleFn ?? importEsmModule;
     this.now = options.now ?? (() => Date.now());
     this.bundledRoot = path.join(this.context.extensionPath, "schemas", "live");
     this.cacheRoot = path.join(this.context.globalStorageUri.fsPath, "schema-cache");
@@ -324,8 +327,7 @@ export class SchemaArtifactManager {
   }
 
   async getValidator(): Promise<OpenClawZodValidator | null> {
-    const active = await this.resolveActiveRoot();
-    const validatorPath = path.join(active.dir, ARTIFACT_FILE_NAMES.validator);
+    const validatorPath = path.join(this.bundledRoot, ARTIFACT_FILE_NAMES.validator);
     if (!(await exists(validatorPath))) {
       return null;
     }
@@ -340,7 +342,7 @@ export class SchemaArtifactManager {
     }
 
     const importUrl = `${pathToFileURL(validatorPath).href}?v=${stat.mtimeMs}`;
-    const loaded = (await importEsmModule(importUrl)) as Partial<OpenClawZodValidator>;
+    const loaded = (await this.importModuleFn(importUrl)) as Partial<OpenClawZodValidator>;
     if (typeof loaded.validate !== "function") {
       return null;
     }
