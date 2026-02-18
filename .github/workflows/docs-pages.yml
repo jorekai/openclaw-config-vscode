@@ -55,11 +55,25 @@ jobs:
         if: steps.pages.outputs.enabled == 'true'
         uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b
 
+      - name: Archive Pages artifact
+        if: steps.pages.outputs.enabled == 'true'
+        run: |
+          tar \
+            --dereference --hard-dereference \
+            --directory site \
+            -cvf "$RUNNER_TEMP/artifact.tar" \
+            --exclude=.git \
+            --exclude=.github \
+            .
+
       - name: Upload Pages artifact
         if: steps.pages.outputs.enabled == 'true'
-        uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          path: site
+          name: github-pages
+          path: ${{ runner.temp }}/artifact.tar
+          retention-days: 1
+          if-no-files-found: error
 
   deploy:
     runs-on: ubuntu-latest
