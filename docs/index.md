@@ -22,3 +22,9 @@ DX-first documentation for safe, fast, and predictable editing of `openclaw.json
 
 - [Architecture](./architecture.md) for runtime/module map.
 - [Contributing](./contributing.md) for local setup and PR safety gates.
+
+## Release
+
+- [Release Roadmap](./release-roadmap.md) for one-week launch sequencing and go/no-go criteria.
+- [Feature Complete Gate](./release-feature-complete-checklist.md) for smoke evidence and go/no-go status.
+- [Release Checklist](./release-checklist.md) for manual publishing to VS Marketplace and Open VSX.

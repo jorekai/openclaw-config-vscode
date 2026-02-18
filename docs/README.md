@@ -23,6 +23,12 @@ Use this index to find the fastest path for your current task.
 - [`architecture.md`](./architecture.md): runtime flow and module map.
 - [`contributing.md`](./contributing.md): setup, test gates, and safe change workflow.
 
+## Release Readiness and Publishing
+
+- [`release-roadmap.md`](./release-roadmap.md): one-week launch roadmap with freeze rules, risk gates, and go/no-go criteria.
+- [`release-feature-complete-checklist.md`](./release-feature-complete-checklist.md): feature-complete smoke matrix and evidence log.
+- [`release-checklist.md`](./release-checklist.md): end-to-end manual release checklist for VS Marketplace and Open VSX.
+
 ## Full Link Map
 
 | Document | Purpose |
@@ -37,6 +43,9 @@ Use this index to find the fastest path for your current task.
 | [`architecture.md`](./architecture.md) | Code-level architecture and data/control flow |
 | [`contributing.md`](./contributing.md) | Contributor workflow, constraints, and expectations |
 | [`runbook.md`](./runbook.md) | Operations and incident procedures |
+| [`release-roadmap.md`](./release-roadmap.md) | One-week launch roadmap and go/no-go gates |
+| [`release-feature-complete-checklist.md`](./release-feature-complete-checklist.md) | Feature-complete gate criteria and evidence |
+| [`release-checklist.md`](./release-checklist.md) | Manual release and publishing steps |
 
 ## GitHub Pages Build and Preview
 

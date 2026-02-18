@@ -66,7 +66,7 @@ describe("plugin metadata loader", () => {
     const result = await loadPluginHintEntries({
       workspaceRoot,
       localPath,
-      remoteUrl: "https://raw.githubusercontent.com/nilsjorek/openclaw-config-vscode/main/plugin-hints.json",
+      remoteUrl: "https://raw.githubusercontent.com/jorekai/openclaw-config-vscode/main/plugin-hints.json",
       securityPolicy: {
         requireHttps: true,
         allowedHosts: ["raw.githubusercontent.com"],
@@ -103,7 +103,7 @@ describe("plugin metadata loader", () => {
       securityPolicy: {
         requireHttps: true,
         allowedHosts: ["raw.githubusercontent.com"],
-        allowedRepositories: ["nilsjorek/openclaw-config-vscode"],
+        allowedRepositories: ["jorekai/openclaw-config-vscode"],
       },
       fetchFn: async () => new Response("{}", { status: 200 }),
     });

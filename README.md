@@ -1,5 +1,9 @@
 # OpenClaw Config VS Code Extension
 
+[![CI](https://github.com/jorekai/openclaw-config-vscode/actions/workflows/ci.yml/badge.svg)](https://github.com/jorekai/openclaw-config-vscode/actions/workflows/ci.yml)
+[![Virus Scan (ClamAV)](https://github.com/jorekai/openclaw-config-vscode/actions/workflows/virus-scan.yml/badge.svg)](https://github.com/jorekai/openclaw-config-vscode/actions/workflows/virus-scan.yml)
+[![Test Coverage](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/jorekai/openclaw-config-vscode/main/badges/coverage.json)](https://github.com/jorekai/openclaw-config-vscode/actions/workflows/coverage.yml)
+
 DX-first VS Code support for `openclaw.json` with schema validation, smart diagnostics, quick fixes, and guided configuration workflows.
 
 ## Who This Is For
@@ -62,7 +66,7 @@ Then launch the extension in VS Code from this repo:
 | `openclawConfig.sync.ttlHours` | Sync cache TTL in hours | `6` |
 | `openclawConfig.sync.manifestUrl` | Remote manifest source | GitHub raw manifest URL |
 | `openclawConfig.sync.allowedHosts` | Host allowlist for sync URLs | `["raw.githubusercontent.com"]` |
-| `openclawConfig.sync.allowedRepositories` | Repository allowlist for artifact URLs | `["nilsjorek/openclaw-config-vscode"]` |
+| `openclawConfig.sync.allowedRepositories` | Repository allowlist for artifact URLs | `["jorekai/openclaw-config-vscode"]` |
 | `openclawConfig.codeActions.enabled` | Toggle OpenClaw quick fixes | `true` |
 | `openclawConfig.integrator.strictSecrets` | Elevate secret hygiene to errors | `false` |
 | `openclawConfig.integrator.explainOnHover` | Show explain text on hover | `true` |
@@ -84,6 +88,8 @@ Full settings reference: [`docs/configuration.md`](./docs/configuration.md)
 | Understand internals and module layout | [`docs/architecture.md`](./docs/architecture.md) |
 | Contribute safely | [`docs/contributing.md`](./docs/contributing.md) |
 | Operate/release with incident procedures | [`docs/runbook.md`](./docs/runbook.md) |
+| Plan launch sequencing and gates | [`docs/release-roadmap.md`](./docs/release-roadmap.md) |
+| Run feature-complete and release gates | [`docs/release-checklist.md`](./docs/release-checklist.md) |
 
 ## Development Commands
 
@@ -117,6 +123,6 @@ python -m mkdocs serve
 
 ## License and Changelog
 
-- License: [MIT](./package.json)
+- License: [MIT](./LICENSE)
 - Changelog: [`CHANGELOG.md`](./CHANGELOG.md)
 - Security policy: [`SECURITY.md`](./SECURITY.md)

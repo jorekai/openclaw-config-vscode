@@ -1,8 +1,8 @@
 site_name: OpenClaw Config VS Code Extension
 site_description: DX-first documentation for the OpenClaw VS Code extension
-site_url: https://nilsjorek.github.io/openclaw-config-vscode/
-repo_url: https://github.com/nilsjorek/openclaw-config-vscode
-repo_name: nilsjorek/openclaw-config-vscode
+site_url: https://jorekai.github.io/openclaw-config-vscode/
+repo_url: https://github.com/jorekai/openclaw-config-vscode
+repo_name: jorekai/openclaw-config-vscode
 docs_dir: docs
 site_dir: site
 exclude_docs: |
@@ -28,3 +28,6 @@ nav:
   - Architecture: architecture.md
   - Contributing: contributing.md
   - Operations Runbook: runbook.md
+  - Release Roadmap: release-roadmap.md
+  - Feature Complete Gate: release-feature-complete-checklist.md
+  - Release Checklist: release-checklist.md

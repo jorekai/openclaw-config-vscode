@@ -4,6 +4,8 @@ dist
 *.vsix
 .tmp
 site
+gitleaks.sarif
+coverage
 .env
 .env.*
 !.env.example

@@ -20,7 +20,7 @@ type SchemaManifestV1 = {
 const OPENCLAW_REPO = process.env.OPENCLAW_REPO ?? "https://github.com/openclaw/openclaw.git";
 const OPENCLAW_REF = process.env.OPENCLAW_REF ?? "main";
 const ARTIFACT_REPOSITORY =
-  process.env.SCHEMA_REPOSITORY ?? process.env.GITHUB_REPOSITORY ?? "nilsjorek/openclaw-config-vscode";
+  process.env.SCHEMA_REPOSITORY ?? process.env.GITHUB_REPOSITORY ?? "jorekai/openclaw-config-vscode";
 const ARTIFACT_REF = process.env.SCHEMA_ARTIFACT_REF ?? "main";
 const FORCE_SYNC = process.env.FORCE_SYNC === "1";
 

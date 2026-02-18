@@ -7,6 +7,11 @@ export default defineConfig({
     globals: true,
     coverage: {
       enabled: false,
+      provider: "v8",
+      reportsDirectory: "./coverage",
+      reporter: ["text", "json-summary"],
+      include: ["src/**/*.ts"],
+      exclude: ["src/**/*.d.ts"],
     },
   },
 });

@@ -19,6 +19,64 @@ Expected result:
 - Build succeeds.
 - Unit and integration tests pass.
 
+## Release Preflight (No Publish)
+
+Use this before any public launch decision.
+
+1. Install and build gates:
+
+```bash
+pnpm install --frozen-lockfile
+pnpm release:gate
+python3 -m mkdocs build --strict
+pnpm package:vsix
+```
+
+2. Verify release artifact exists:
+
+```bash
+ls -la dist/openclaw-config-vscode-0.1.0.vsix
+```
+
+3. Verify package payload excludes source and docs content:
+
+```bash
+unzip -l dist/openclaw-config-vscode-0.1.0.vsix | rg "extension/(src|test|docs|site|\\.github)/"
+```
+
+Expected result: no matches.
+
+4. Verify publish prerequisites (without publishing):
+
+```bash
+node -p "require('./package.json').publisher"
+test -n "$VSCE_PAT" && echo "VSCE_PAT set"
+test -n "$OVSX_PAT" && echo "OVSX_PAT set"
+```
+
+Expected result:
+
+- Publisher is `jorekai`.
+- Both token checks report as set.
+
+5. Secret scan preflight (same image profile as CI):
+
+```bash
+docker run --rm \
+  -v "$PWD:/repo" \
+  zricethezav/gitleaks@sha256:691af3c7c5a48b16f187ce3446d5f194838f91238f27270ed36eef6359a574d9 \
+  detect \
+  --source=/repo \
+  --redact \
+  --verbose \
+  --report-format=sarif \
+  --report-path=/repo/gitleaks.sarif
+```
+
+Expected result: no leaks found.
+
+For actual publish commands, use [`release-checklist.md`](./release-checklist.md).
+
 ## Runtime Status Inspection
 
 Primary command:

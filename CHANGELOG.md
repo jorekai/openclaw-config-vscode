@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.1.0 - 2026-02-18
 
 ### Added
 - Lazy activation with explicit `ensureInitialized()` lock and deferred heavy sync.

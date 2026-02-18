@@ -1,0 +1,38 @@
+name: Virus Scan (ClamAV)
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  schedule:
+    - cron: "45 3 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  clamav:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install ClamAV
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clamav
+
+      - name: Update virus definitions
+        run: sudo freshclam || true
+
+      - name: Run ClamAV scan
+        run: |
+          clamscan \
+            --recursive \
+            --infected \
+            --exclude-dir='^./.git$' \
+            --exclude-dir='^./node_modules$' \
+            .

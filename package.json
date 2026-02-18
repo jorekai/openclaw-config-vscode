@@ -2,9 +2,18 @@
   "name": "openclaw-config-vscode",
   "displayName": "OpenClaw Config",
   "description": "Lightweight VS Code support for openclaw.json with live schema updates and Zod shadow diagnostics.",
-  "version": "0.0.1",
-  "publisher": "nilsjorek",
+  "version": "0.1.0",
+  "publisher": "jorekai",
   "license": "MIT",
+  "icon": "assets/icon.png",
+  "keywords": [
+    "openclaw",
+    "json",
+    "configuration",
+    "schema",
+    "validation",
+    "vscode-extension"
+  ],
   "engines": {
     "vscode": "^1.95.0"
   },
@@ -27,8 +36,24 @@
   "main": "./dist/extension.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/nilsjorek/openclaw-config-vscode.git"
+    "url": "https://github.com/jorekai/openclaw-config-vscode.git"
   },
+  "homepage": "https://github.com/jorekai/openclaw-config-vscode#readme",
+  "bugs": {
+    "url": "https://github.com/jorekai/openclaw-config-vscode/issues"
+  },
+  "files": [
+    "dist/**/*.js",
+    "dist/**/*.js.map",
+    "schemas/live/**",
+    "snippets/**",
+    "assets/icon.png",
+    "README.md",
+    "CHANGELOG.md",
+    "SECURITY.md",
+    "LICENSE",
+    "package.json"
+  ],
   "contributes": {
     "commands": [
       {
@@ -77,7 +102,7 @@
         },
         "openclawConfig.sync.manifestUrl": {
           "type": "string",
-          "default": "https://raw.githubusercontent.com/nilsjorek/openclaw-config-vscode/main/schemas/live/manifest.json",
+          "default": "https://raw.githubusercontent.com/jorekai/openclaw-config-vscode/main/schemas/live/manifest.json",
           "description": "Manifest URL used for live schema synchronization."
         },
         "openclawConfig.sync.allowedHosts": {
@@ -93,7 +118,7 @@
         "openclawConfig.sync.allowedRepositories": {
           "type": "array",
           "default": [
-            "nilsjorek/openclaw-config-vscode"
+            "jorekai/openclaw-config-vscode"
           ],
           "items": {
             "type": "string"
@@ -141,19 +166,27 @@
     ]
   },
   "scripts": {
+    "vscode:prepublish": "pnpm compile",
     "compile": "tsc -p ./tsconfig.json",
     "watch": "tsc -watch -p ./tsconfig.json",
     "lint": "tsc -p ./tsconfig.json --noEmit",
     "sync:schema": "tsx ./scripts/sync-openclaw-schema.mts",
     "test": "vitest run",
     "test:unit": "vitest run ./test/unit",
+    "test:coverage": "vitest run ./test/unit --coverage.enabled true",
     "test:integration": "tsx ./test/integration/runTest.ts",
+    "package:verify": "pnpm dlx @vscode/vsce package --no-yarn --no-dependencies --out /tmp/openclaw-config-vscode-${npm_package_version}.vsix",
+    "package:vsix": "mkdir -p dist && pnpm dlx @vscode/vsce package --no-yarn --no-dependencies --out /tmp/openclaw-config-vscode-${npm_package_version}.vsix && cp /tmp/openclaw-config-vscode-${npm_package_version}.vsix ./dist/openclaw-config-vscode-${npm_package_version}.vsix",
+    "release:gate": "pnpm compile && pnpm test:unit && pnpm test:integration && pnpm package:verify",
+    "publish:vsce": "pnpm dlx @vscode/vsce publish --packagePath ./dist/openclaw-config-vscode-${npm_package_version}.vsix --no-yarn --no-dependencies",
+    "publish:ovsx": "pnpm dlx ovsx publish ./dist/openclaw-config-vscode-${npm_package_version}.vsix",
     "pretest": "npm run compile"
   },
   "devDependencies": {
     "@types/mocha": "^10.0.8",
     "@types/node": "^24.2.0",
     "@types/vscode": "^1.95.0",
+    "@vitest/coverage-v8": "^3.2.4",
     "@vscode/test-electron": "^2.5.2",
     "esbuild": "^0.25.9",
     "mocha": "^10.8.2",
