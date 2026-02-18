@@ -17,3 +17,4 @@ coverage
 *.cer
 *.jks
 *.kubeconfig
+.DS_Store

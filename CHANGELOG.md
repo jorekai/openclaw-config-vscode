@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.3 - 2026-02-18
+
+### Changed
+- Updated extension icon and repository ignore rules.
+
 ## 0.1.2 - 2026-02-18
 
 ### Fixed
