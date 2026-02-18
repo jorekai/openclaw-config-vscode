@@ -53,7 +53,7 @@ Tasks:
 1. Run full gate:
    - `pnpm install --frozen-lockfile`
    - `pnpm release:gate`
-   - `python3 -m mkdocs build --strict`
+   - `pnpm docs:build`
    - `pnpm package:vsix`
 2. Validate VSIX payload contains runtime artifacts only.
 
@@ -61,7 +61,7 @@ Verification:
 
 1. VSIX exists at `dist/openclaw-config-vscode-0.1.0.vsix`.
 2. No packaging warnings for LICENSE/file filtering.
-3. No `src/`, `test/`, `docs/`, `site/`, `.github/` content in VSIX.
+3. No `src/`, `test/`, `docs/`, `.github/` content in VSIX.
 
 ## Day 4: Publisher Onboarding + Publish Preflight
 

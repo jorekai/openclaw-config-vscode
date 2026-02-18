@@ -28,7 +28,7 @@ Use this before any public launch decision.
 ```bash
 pnpm install --frozen-lockfile
 pnpm release:gate
-python3 -m mkdocs build --strict
+pnpm docs:build
 pnpm package:vsix
 ```
 
@@ -41,7 +41,7 @@ ls -la dist/openclaw-config-vscode-0.1.0.vsix
 3. Verify package payload excludes source and docs content:
 
 ```bash
-unzip -l dist/openclaw-config-vscode-0.1.0.vsix | rg "extension/(src|test|docs|site|\\.github)/"
+unzip -l dist/openclaw-config-vscode-0.1.0.vsix | rg "extension/(src|test|docs|\\.github)/"
 ```
 
 Expected result: no matches.

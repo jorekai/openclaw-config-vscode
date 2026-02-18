@@ -33,7 +33,7 @@ Use this index to find the fastest path for your current task.
 
 | Document | Purpose |
 |---|---|
-| [`../README.md`](../README.md) | Compact project hub and quick navigation |
+| [`Project README`](https://github.com/jorekai/openclaw-config-vscode/blob/main/README.md) | Compact project hub and quick navigation |
 | [`getting-started.md`](./getting-started.md) | First-run success path in under 5 minutes |
 | [`commands.md`](./commands.md) | Full command reference with preconditions and outcomes |
 | [`configuration.md`](./configuration.md) | Complete settings reference and safe configuration patterns |
@@ -49,20 +49,20 @@ Use this index to find the fastest path for your current task.
 
 ## GitHub Pages Build and Preview
 
-This docs directory is configured as MkDocs source for GitHub Pages.
+This docs directory is configured as VitePress source for GitHub Pages.
 
 Build locally:
 
 ```bash
-python -m pip install -r requirements.txt
-python -m mkdocs build --strict
+pnpm install
+pnpm docs:build
 ```
 
 Preview locally:
 
 ```bash
-python -m pip install -r requirements.txt
-python -m mkdocs serve
+pnpm install
+pnpm docs:dev
 ```
 
 Deployment workflow:

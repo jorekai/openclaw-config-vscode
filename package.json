@@ -165,6 +165,9 @@
     "compile": "tsc -p ./tsconfig.json --noEmit && esbuild src/extension.ts --bundle --platform=node --format=cjs --main-fields=module,main --external:vscode --outfile=dist/extension.js --sourcemap",
     "watch": "esbuild src/extension.ts --bundle --platform=node --format=cjs --main-fields=module,main --external:vscode --outfile=dist/extension.js --sourcemap --watch",
     "lint": "tsc -p ./tsconfig.json --noEmit",
+    "docs:dev": "vitepress dev docs",
+    "docs:build": "vitepress build docs",
+    "docs:preview": "vitepress preview docs",
     "sync:schema": "tsx ./scripts/sync-openclaw-schema.mts",
     "test": "vitest run",
     "test:unit": "vitest run ./test/unit",
@@ -187,6 +190,7 @@
     "mocha": "^10.8.2",
     "tsx": "^4.20.5",
     "typescript": "^5.9.2",
+    "vitepress": "^1.6.3",
     "vitest": "^3.2.4"
   },
   "dependencies": {

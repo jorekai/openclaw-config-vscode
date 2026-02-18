@@ -107,17 +107,17 @@ pnpm sync:schema
 
 ## GitHub Pages Documentation
 
-This repository includes a GitHub Pages documentation pipeline powered by MkDocs.
+This repository includes a GitHub Pages documentation pipeline powered by VitePress.
 
-- Site configuration: [`mkdocs.yml`](./mkdocs.yml)
+- Site configuration: [`docs/.vitepress/config.mts`](./docs/.vitepress/config.mts)
 - Deployment workflow: [`.github/workflows/docs-pages.yml`](./.github/workflows/docs-pages.yml)
 - Docs source directory: [`docs/`](./docs/)
 
 Local preview:
 
 ```bash
-python -m pip install -r docs/requirements.txt
-python -m mkdocs serve
+pnpm install
+pnpm docs:dev
 ```
 
 ## License and Changelog

@@ -1,30 +1,23 @@
-# OpenClaw Config Documentation
+---
+layout: home
 
-DX-first documentation for safe, fast, and predictable editing of `openclaw.json` in VS Code.
+hero:
+  name: OpenClaw Config Documentation
+  text: Modern docs for a predictable VS Code workflow
+  tagline: DX-first guidance for editing openclaw.json with validation, quick fixes, and secure schema sync.
+  actions:
+    - theme: brand
+      text: Getting Started
+      link: /getting-started
+    - theme: alt
+      text: Command Reference
+      link: /commands
 
-## Start Here
-
-- [Getting Started](./getting-started.md) to reach a first working config in minutes.
-- [Commands](./commands.md) for exact command behavior and failure signals.
-- [Configuration](./configuration.md) for sync/security/plugin settings.
-
-## Daily Work
-
-- [Workflows](./workflows.md) for repeatable routines.
-- [Diagnostics and Quick Fixes](./diagnostics-and-quick-fixes.md) for issue resolution patterns.
-
-## Debug and Operate
-
-- [Troubleshooting](./troubleshooting.md) for symptom-first debugging.
-- [Operations Runbook](./runbook.md) for operational procedures and incident response.
-
-## Build and Contribute
-
-- [Architecture](./architecture.md) for runtime/module map.
-- [Contributing](./contributing.md) for local setup and PR safety gates.
-
-## Release
-
-- [Release Roadmap](./release-roadmap.md) for one-week launch sequencing and go/no-go criteria.
-- [Feature Complete Gate](./release-feature-complete-checklist.md) for smoke evidence and go/no-go status.
-- [Release Checklist](./release-checklist.md) for manual publishing to VS Marketplace and Open VSX.
+features:
+  - title: Fast Onboarding
+    details: Reach a first working openclaw.json setup in minutes with practical defaults and safety checks.
+  - title: Practical Operations
+    details: Troubleshoot incidents and run release preflight with clear, operator-focused procedures.
+  - title: Release Readiness
+    details: Follow roadmap, feature-complete gate, and release checklist from one consistent documentation flow.
+---
