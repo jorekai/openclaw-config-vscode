@@ -1,8 +1,8 @@
 # OpenClaw Config VS Code Extension
 
-[![CI](https://github.com/jorekai/openclaw-config-vscode/actions/workflows/ci.yml/badge.svg)](https://github.com/jorekai/openclaw-config-vscode/actions/workflows/ci.yml)
-[![Virus Scan (ClamAV)](https://github.com/jorekai/openclaw-config-vscode/actions/workflows/virus-scan.yml/badge.svg)](https://github.com/jorekai/openclaw-config-vscode/actions/workflows/virus-scan.yml)
-[![Test Coverage](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/jorekai/openclaw-config-vscode/main/badges/coverage.json)](https://github.com/jorekai/openclaw-config-vscode/actions/workflows/coverage.yml)
+[![CI](https://github.com/jorekai/openclaw-config-vscode/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/jorekai/openclaw-config-vscode/actions/workflows/ci.yml)
+[![Virus Scan (ClamAV)](https://github.com/jorekai/openclaw-config-vscode/actions/workflows/virus-scan.yml/badge.svg?branch=main)](https://github.com/jorekai/openclaw-config-vscode/actions/workflows/virus-scan.yml)
+[![Test Coverage](https://github.com/jorekai/openclaw-config-vscode/actions/workflows/coverage.yml/badge.svg?branch=main)](https://github.com/jorekai/openclaw-config-vscode/actions/workflows/coverage.yml)
 
 DX-first VS Code support for `openclaw.json` with schema validation, smart diagnostics, quick fixes, and guided configuration workflows.
 
