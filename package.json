@@ -195,5 +195,11 @@
   },
   "dependencies": {
     "jsonc-parser": "^3.3.1"
+  },
+  "pnpm": {
+    "overrides": {
+      "esbuild": "0.25.12",
+      "minimatch": "10.2.1"
+    }
   }
 }
