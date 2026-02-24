@@ -1,7 +1,10 @@
 import * as vscode from "vscode";
-import { findNodeAtOffset, getNodePath, parseTree, type Node } from "jsonc-parser";
-import { resolveDynamicSubfields } from "../schema/dynamicSubfields";
+import { resolveDynamicSubfieldsWithMatches } from "../schema/dynamicSubfields";
 import type { DynamicSubfieldCatalog } from "../schema/types";
+import { resolveCompletionContext } from "./completion/context";
+import { filterHybridDynamicEntries } from "./completion/hybrid";
+import { buildKeyCompletionSuggestions, buildValueCompletionSuggestions } from "./completion/items";
+import type { CompletionSuggestion } from "./completion/items";
 import { isOpenClawConfigDocument } from "../utils";
 
 type CompletionOptions = {
@@ -22,6 +25,7 @@ export function registerOpenClawSubfieldCompletion(
       DOCUMENT_SELECTOR,
       new OpenClawSubfieldCompletionProvider(options),
       "\"",
+      ":",
     ),
   );
 }
@@ -43,70 +47,45 @@ class OpenClawSubfieldCompletionProvider implements vscode.CompletionItemProvide
     }
 
     const text = document.getText();
-    const root = parseTree(text);
-    if (!root) {
+    const completionContext = resolveCompletionContext(text, document.offsetAt(position));
+    if (completionContext.mode === "none") {
       return [];
     }
 
-    const offset = document.offsetAt(position);
-    const node = findNodeAtOffset(root, offset, true);
-    const objectNode = findClosestObjectNode(node);
-    if (!objectNode) {
+    if (completionContext.mode === "objectKey") {
+      const entries = filterHybridDynamicEntries(
+        resolveDynamicSubfieldsWithMatches(catalog, completionContext.objectPath),
+      );
+      const suggestions = buildKeyCompletionSuggestions(entries, completionContext.existingKeys);
+      return suggestions.map((suggestion) => toCompletionItem(suggestion));
+    }
+
+    const entries = filterHybridDynamicEntries(
+      resolveDynamicSubfieldsWithMatches(catalog, completionContext.objectPath),
+    );
+    const activeEntry = entries.find((entry) => entry.entry.key === completionContext.propertyKey);
+    if (!activeEntry) {
       return [];
     }
 
-    const path = getNodePath(objectNode)
-      .map((segment) => (typeof segment === "number" ? "*" : String(segment)))
-      .join(".");
-    const entries = resolveDynamicSubfields(catalog, path);
-    if (entries.length === 0) {
-      return [];
-    }
-
-    const existing = collectExistingObjectKeys(objectNode);
-    const items: vscode.CompletionItem[] = [];
-
-    for (const entry of entries) {
-      if (existing.has(entry.key)) {
-        continue;
-      }
-
-      const item = new vscode.CompletionItem(entry.key, vscode.CompletionItemKind.Property);
-      item.detail = entry.source === "plugin" ? "OpenClaw plugin subfield" : "OpenClaw schema subfield";
-      item.documentation = entry.description ? new vscode.MarkdownString(entry.description) : undefined;
-      const snippet = entry.snippet
-        ? `"${entry.key}": ${entry.snippet}`
-        : `"${entry.key}": $1`;
-      item.insertText = new vscode.SnippetString(snippet);
-      item.filterText = entry.key;
-      items.push(item);
-    }
-
-    return items;
+    const suggestions = buildValueCompletionSuggestions(activeEntry);
+    return suggestions.map((suggestion) => toCompletionItem(suggestion));
   }
 }
 
-function findClosestObjectNode(node: Node | undefined): Node | null {
-  let current = node;
-  while (current) {
-    if (current.type === "object") {
-      return current;
-    }
-    current = current.parent;
-  }
-  return null;
-}
-
-function collectExistingObjectKeys(node: Node): Set<string> {
-  const keys = new Set<string>();
-  for (const child of node.children ?? []) {
-    if (child.type !== "property") {
-      continue;
-    }
-    const keyNode = child.children?.[0];
-    if (keyNode && typeof keyNode.value === "string") {
-      keys.add(keyNode.value);
-    }
-  }
-  return keys;
+function toCompletionItem(suggestion: CompletionSuggestion): vscode.CompletionItem {
+  const kind =
+    suggestion.kind === "property" ? vscode.CompletionItemKind.Property : vscode.CompletionItemKind.Value;
+  const item = new vscode.CompletionItem(suggestion.label, kind);
+  item.detail = suggestion.detail;
+  item.documentation = suggestion.documentation
+    ? new vscode.MarkdownString(suggestion.documentation)
+    : undefined;
+  item.filterText = suggestion.filterText;
+  item.sortText = suggestion.sortText;
+  item.insertText =
+    suggestion.insertText.kind === "snippet"
+      ? new vscode.SnippetString(suggestion.insertText.value)
+      : suggestion.insertText.value;
+  return item;
 }

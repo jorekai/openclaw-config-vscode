@@ -25,7 +25,7 @@ Fast and safe config changes with minimal context switching.
 
 Steps:
 1. Edit fields in `openclaw.json`.
-2. Accept dynamic completion suggestions where offered.
+2. Accept context-aware key/value completion suggestions directly in editor suggest preview.
 3. Use hover explain or `OpenClaw: Explain Selection` on unclear fields.
 4. Apply available quick fixes for detected issues.
 5. Normalize before commit.
@@ -94,6 +94,7 @@ Example settings:
 
 Success criteria:
 - Dynamic completion reflects plugin entries.
+- Value suggestions reflect plugin hint defaults/enums/examples where provided.
 - No repeated metadata load warnings in output.
 
 ## Related Guides

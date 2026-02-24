@@ -75,12 +75,24 @@ export type IntegratorIssue = {
   severity: IntegratorIssueSeverity;
 };
 
+export type CompletionPrimitive = string | number | boolean | null;
+
+export type DynamicValueType = "string" | "number" | "integer" | "boolean" | "object" | "array";
+
+export type DynamicValueHints = {
+  valueType?: DynamicValueType;
+  enumValues?: CompletionPrimitive[];
+  examples?: CompletionPrimitive[];
+  defaultValue?: CompletionPrimitive;
+};
+
 export type DynamicSubfieldEntry = {
   key: string;
   path: string;
   description?: string;
   source: "schema" | "plugin";
   snippet?: string;
+  valueHints?: DynamicValueHints;
 };
 
 export type DynamicSubfieldCatalog = {
@@ -88,10 +100,19 @@ export type DynamicSubfieldCatalog = {
   fieldsByPattern: Map<string, DynamicSubfieldEntry[]>;
 };
 
+export type ResolvedDynamicSubfieldEntry = {
+  entry: DynamicSubfieldEntry;
+  matchedPattern: string;
+  matchedByWildcard: boolean;
+};
+
 export type PluginHintProperty = {
   description?: string;
   snippet?: string;
   type?: string;
+  enumValues?: CompletionPrimitive[];
+  examples?: CompletionPrimitive[];
+  defaultValue?: CompletionPrimitive;
 };
 
 export type PluginHintEntry = {

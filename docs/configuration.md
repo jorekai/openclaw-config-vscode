@@ -98,6 +98,35 @@ Precedence behavior:
 - Later layers can override existing property hints for same field key.
 - Warnings are emitted to output when loading fails.
 
+Optional property-level value hints:
+
+- `type`: expected value type (`string`, `number`, `integer`, `boolean`, `object`, `array`).
+- `enumValues`: allowed primitive values.
+- `examples`: suggested primitive example values.
+- `defaultValue`: preferred default primitive value.
+
+Example `.openclaw/plugin-hints.json`:
+
+```json
+{
+  "version": 1,
+  "entries": [
+    {
+      "path": "channels.whatsapp.accounts.*",
+      "properties": {
+        "dynamicMode": {
+          "description": "Plugin-specific mode toggle.",
+          "type": "string",
+          "enumValues": ["strict", "relaxed"],
+          "examples": ["strict"],
+          "defaultValue": "strict"
+        }
+      }
+    }
+  ]
+}
+```
+
 ## Recommended Validation Workflow After Config Changes
 
 1. Update settings.

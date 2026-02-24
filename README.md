@@ -41,7 +41,8 @@ Then launch the extension in VS Code from this repo:
 - Zod shadow diagnostics layered on top of schema diagnostics.
 - Integrator diagnostics for missing agent/account references and secret hygiene.
 - One-click quick fixes for common config issues.
-- Dynamic subfield completion from schema, UI hints, and optional plugin metadata.
+- Hybrid autocomplete: static schema suggestions + dynamic key/value suggestions for wildcard/plugin contexts.
+- Dynamic subfield completion from schema, UI hints, and optional plugin metadata (including value hints).
 - Explain workflows (hover + command) for contextual field guidance.
 - Normalize command for stable ordering and `$schema` insertion.
 - Live schema sync with cache TTL, host/repo allowlists, and SHA-256 verification.

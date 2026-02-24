@@ -35,6 +35,40 @@ describe("plugin metadata loader", () => {
       }),
       true,
     );
+    assert.equal(
+      isPluginHintDocumentV1({
+        version: 1,
+        entries: [
+          {
+            path: "channels.whatsapp.accounts.*",
+            properties: {
+              dynamicMode: {
+                enumValues: ["strict", "relaxed"],
+                examples: ["strict"],
+                defaultValue: "strict",
+              },
+            },
+          },
+        ],
+      }),
+      true,
+    );
+    assert.equal(
+      isPluginHintDocumentV1({
+        version: 1,
+        entries: [
+          {
+            path: "channels.whatsapp.accounts.*",
+            properties: {
+              dynamicMode: {
+                enumValues: [{ invalid: true }],
+              },
+            },
+          },
+        ],
+      }),
+      false,
+    );
   });
 
   it("loads and merges remote + local plugin metadata layers", async () => {
@@ -52,7 +86,12 @@ describe("plugin metadata loader", () => {
             {
               path: "channels.whatsapp.accounts.*",
               properties: {
-                configWrites: { description: "local override" },
+                configWrites: {
+                  description: "local override",
+                  enumValues: [" strict ", "relaxed"],
+                  examples: [" debug "],
+                  defaultValue: " strict ",
+                },
               },
             },
           ],
@@ -94,6 +133,9 @@ describe("plugin metadata loader", () => {
     const entry = result.entries.find((item) => item.path === "channels.whatsapp.accounts.*");
     assert.ok(entry);
     assert.equal(entry.properties.configWrites.description, "local override");
+    assert.deepEqual(entry.properties.configWrites.enumValues, ["strict", "relaxed"]);
+    assert.deepEqual(entry.properties.configWrites.examples, ["debug"]);
+    assert.equal(entry.properties.configWrites.defaultValue, "strict");
     assert.equal(entry.properties.remoteOnly.description, "from remote");
   });
 

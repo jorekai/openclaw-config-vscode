@@ -2,6 +2,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { evaluateUrlSecurity } from "./security";
 import type {
+  CompletionPrimitive,
   ManifestSecurityPolicy,
   PluginHintDocumentV1,
   PluginHintEntry,
@@ -90,6 +91,15 @@ function isPluginHintEntry(value: unknown): value is PluginHintEntry {
     if (typed.type !== undefined && typeof typed.type !== "string") {
       return false;
     }
+    if (typed.defaultValue !== undefined && !isCompletionPrimitive(typed.defaultValue)) {
+      return false;
+    }
+    if (!isCompletionPrimitiveArray(typed.enumValues)) {
+      return false;
+    }
+    if (!isCompletionPrimitiveArray(typed.examples)) {
+      return false;
+    }
     return true;
   });
 }
@@ -169,6 +179,12 @@ function parsePluginHintEntries(raw: string, source: "local" | "remote"): Plugin
           description: property.description?.trim() || undefined,
           snippet: property.snippet?.trim() || undefined,
           type: property.type?.trim() || undefined,
+          enumValues: normalizePrimitiveArray(property.enumValues),
+          examples: normalizePrimitiveArray(property.examples),
+          defaultValue:
+            property.defaultValue !== undefined
+              ? normalizePrimitive(property.defaultValue)
+              : undefined,
         },
       ]),
     ),
@@ -203,6 +219,41 @@ function normalizePattern(value: string): string {
     .map((segment) => segment.trim())
     .filter(Boolean)
     .join(".");
+}
+
+function normalizePrimitiveArray(values: CompletionPrimitive[] | undefined): CompletionPrimitive[] | undefined {
+  if (!values || values.length === 0) {
+    return undefined;
+  }
+
+  const normalized = values.map((value) => normalizePrimitive(value));
+  return normalized.length > 0 ? normalized : undefined;
+}
+
+function normalizePrimitive(value: CompletionPrimitive): CompletionPrimitive {
+  if (typeof value === "string") {
+    return value.trim();
+  }
+  return value;
+}
+
+function isCompletionPrimitive(value: unknown): value is CompletionPrimitive {
+  return (
+    typeof value === "string" ||
+    typeof value === "number" ||
+    typeof value === "boolean" ||
+    value === null
+  );
+}
+
+function isCompletionPrimitiveArray(values: unknown): values is CompletionPrimitive[] | undefined {
+  if (values === undefined) {
+    return true;
+  }
+  if (!Array.isArray(values)) {
+    return false;
+  }
+  return values.every((value) => isCompletionPrimitive(value));
 }
 
 function isMissingFileError(error: unknown): boolean {

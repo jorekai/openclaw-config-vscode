@@ -42,7 +42,7 @@ flowchart TD
 - `src/schema/contentProvider.ts`
   - Content provider for `openclaw-schema://...`.
 - `src/schema/dynamicSubfields.ts`, `src/schema/explain.ts`, `src/schema/types.ts`
-  - Catalog building, explain payload generation, shared type contracts.
+  - Catalog building, value-hint extraction, explain payload generation, shared type contracts.
 
 ### `src/validation/*` (Diagnostics and Code Actions)
 
@@ -61,7 +61,13 @@ flowchart TD
 ### `src/templating/*` (Editing Assistance)
 
 - `src/templating/subfieldCompletion.ts`
-  - Completion provider using dynamic catalog.
+  - Completion provider (hybrid dynamic key/value suggestions for wildcard/plugin contexts).
+- `src/templating/completion/context.ts`
+  - Cursor-context resolver (`objectKey` vs `propertyValue`).
+- `src/templating/completion/items.ts`
+  - Key/value suggestion building and priority logic.
+- `src/templating/completion/hybrid.ts`
+  - Hybrid filtering helper to avoid conflicts with static schema completion.
 - `src/templating/dynamicCatalog.ts`
   - Dynamic snippet list assembly.
 - `src/templating/normalize.ts`

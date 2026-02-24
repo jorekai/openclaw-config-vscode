@@ -3,6 +3,7 @@ import { describe, it } from "vitest";
 import {
   buildDynamicSubfieldCatalog,
   resolveDynamicSubfields,
+  resolveDynamicSubfieldsWithMatches,
 } from "../../src/schema/dynamicSubfields";
 
 describe("dynamicSubfields catalog", () => {
@@ -95,5 +96,130 @@ describe("dynamicSubfields catalog", () => {
     assert.equal(configWrites.source, "plugin");
     assert.equal(configWrites.description, "plugin override");
     assert.ok(pluginFlag);
+  });
+
+  it("derives value hints from enum/const/default/examples including composed schemas", () => {
+    const schema = JSON.stringify({
+      type: "object",
+      properties: {
+        gateway: {
+          type: "object",
+          properties: {
+            mode: {
+              oneOf: [{ const: "token" }, { const: "oauth" }],
+            },
+            retries: {
+              type: "integer",
+              default: 3,
+              examples: [1, 5],
+            },
+          },
+        },
+      },
+    });
+
+    const catalog = buildDynamicSubfieldCatalog(schema, "{}", []);
+    const entries = resolveDynamicSubfields(catalog, "gateway");
+    const mode = entries.find((entry) => entry.key === "mode");
+    const retries = entries.find((entry) => entry.key === "retries");
+
+    assert.ok(mode);
+    assert.deepEqual(mode.valueHints?.enumValues, ["token", "oauth"]);
+    assert.equal(mode.valueHints?.valueType, "string");
+
+    assert.ok(retries);
+    assert.equal(retries.valueHints?.valueType, "integer");
+    assert.equal(retries.valueHints?.defaultValue, 3);
+    assert.deepEqual(retries.valueHints?.examples, [1, 5]);
+  });
+
+  it("preserves schema value hints when plugin only overrides selected fields", () => {
+    const schema = JSON.stringify({
+      type: "object",
+      properties: {
+        channels: {
+          type: "object",
+          properties: {
+            whatsapp: {
+              type: "object",
+              properties: {
+                accounts: {
+                  type: "object",
+                  additionalProperties: {
+                    type: "object",
+                    properties: {
+                      dynamicMode: {
+                        type: "string",
+                        enum: ["strict", "relaxed"],
+                        default: "strict",
+                        description: "schema description",
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    const catalog = buildDynamicSubfieldCatalog(schema, "{}", [
+      {
+        path: "channels.whatsapp.accounts.*",
+        properties: {
+          dynamicMode: {
+            description: "plugin description",
+          },
+        },
+      },
+    ]);
+
+    const entries = resolveDynamicSubfields(catalog, "channels.whatsapp.accounts.primary");
+    const dynamicMode = entries.find((entry) => entry.key === "dynamicMode");
+
+    assert.ok(dynamicMode);
+    assert.equal(dynamicMode.source, "plugin");
+    assert.equal(dynamicMode.description, "plugin description");
+    assert.deepEqual(dynamicMode.valueHints?.enumValues, ["strict", "relaxed"]);
+    assert.equal(dynamicMode.valueHints?.defaultValue, "strict");
+  });
+
+  it("exposes wildcard match metadata for hybrid filtering", () => {
+    const schema = JSON.stringify({
+      type: "object",
+      properties: {
+        channels: {
+          type: "object",
+          properties: {
+            whatsapp: {
+              type: "object",
+              properties: {
+                accounts: {
+                  type: "object",
+                  additionalProperties: {
+                    type: "object",
+                    properties: {
+                      enabled: { type: "boolean" },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    const catalog = buildDynamicSubfieldCatalog(schema, "{}", []);
+    const entries = resolveDynamicSubfieldsWithMatches(
+      catalog,
+      "channels.whatsapp.accounts.default",
+    );
+    const enabled = entries.find((entry) => entry.entry.key === "enabled");
+
+    assert.ok(enabled);
+    assert.equal(enabled.matchedByWildcard, true);
+    assert.equal(enabled.matchedPattern, "channels.whatsapp.accounts.*");
   });
 });

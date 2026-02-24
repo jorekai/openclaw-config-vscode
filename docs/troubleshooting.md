@@ -11,6 +11,7 @@ Goal: diagnose issues quickly by starting from symptoms and mapping to precise a
 | Schema status shows blocked policy | Host/repository/HTTPS mismatch | `policy.manifest.*` and `policy.artifacts.*` in status output | Update allowlists and manifest URL, then refresh schema |
 | Sync never updates | TTL not expired and no forced refresh | `ttlHours`, `lastCheckedAt`, command usage | Run `OpenClaw: Refresh Schema Now` |
 | Plugin hints not appearing | Local path wrong or remote blocked/invalid | Output warnings, metadata settings | Fix path/URL/allowlist and rerun refresh |
+| Dynamic value suggestions missing | Context is static-schema-only or hint shape invalid | Cursor path, plugin hint payload, output warnings | Test in wildcard/plugin contexts and validate `enumValues/examples/defaultValue` are primitive values |
 | Quick fix not shown | Code actions disabled or unsupported diagnostic | `openclawConfig.codeActions.enabled`, diagnostic source | Re-enable setting and place cursor on exact diagnostic |
 | Explain command shows catalog unavailable | Catalog build failed or not initialized yet | Output channel warnings | Run status/refresh and retry explain |
 | Unexpected duplicate diagnostics | Overlap across providers | Diagnostic sources and severities | Normalize file and re-open; compare with dedupe behavior expectations |
@@ -50,6 +51,7 @@ Checks:
 1. Local path exists and contains valid versioned JSON shape.
 2. Remote URL is HTTPS and policy-allowed.
 3. Remote response is valid and reachable.
+4. Optional value hint fields (`enumValues`, `examples`, `defaultValue`) contain primitive values only.
 
 If issues persist:
 
